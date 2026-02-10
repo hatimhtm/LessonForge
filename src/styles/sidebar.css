@@ -1,0 +1,164 @@
+/* ═══════════════════════════════════════════════════
+   LessonForge — Left Sidebar (Page Nav)
+   ═══════════════════════════════════════════════════ */
+
+.panel-nav {
+    background: var(--bg-panel-alt);
+}
+
+.page-nav {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.step-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: left;
+    width: 100%;
+    position: relative;
+}
+
+.step-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.step-btn.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+    font-weight: 700;
+}
+
+.step-btn .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-btn.active .step-num {
+    background: var(--accent);
+    color: white;
+}
+
+.step-btn .step-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.step-btn .step-del {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--danger);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px;
+    margin-left: auto;
+}
+
+body.edit-mode .step-btn .step-del {
+    display: block;
+}
+
+/* Drag states */
+.step-btn.dragging {
+    opacity: 0.4;
+}
+
+.step-btn.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+}
+
+/* --- Checklist --- */
+.checklist-container {
+    padding: 8px 16px;
+}
+
+.chk-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+}
+
+.chk-item:hover {
+    background: var(--bg-hover);
+}
+
+.chk-item input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.chk-item.done {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.chk-del {
+    display: none;
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--danger);
+    cursor: pointer;
+}
+
+body.edit-mode .chk-del {
+    display: block;
+}
+
+/* --- Session Notes --- */
+.session-notes {
+    width: calc(100% - 32px);
+    margin: 0 16px 16px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel-alt);
+    color: var(--text-primary);
+    font-family: var(--font-content);
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border var(--transition);
+}
+
+.session-notes:focus {
+    border-color: var(--accent);
+}

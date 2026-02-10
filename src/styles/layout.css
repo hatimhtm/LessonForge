@@ -1,0 +1,258 @@
+/* ═══════════════════════════════════════════════════
+   LessonForge — Main Grid Layout
+   ═══════════════════════════════════════════════════ */
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr 320px;
+    height: calc(100vh - var(--toolbar-h));
+    margin-top: var(--toolbar-h);
+    gap: 0;
+    transition: margin-top var(--transition);
+}
+
+body.edit-mode .main-grid {
+    margin-top: calc(var(--toolbar-h) + var(--format-h));
+    height: calc(100vh - var(--toolbar-h) - var(--format-h));
+}
+
+.panel {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.panel:last-child {
+    border-right: none;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-panel);
+    z-index: 5;
+    border-bottom: 1px solid var(--border);
+}
+
+.panel-header h3 {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+}
+
+.panel-header h3 i {
+    margin-right: 6px;
+    color: var(--accent);
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 16px;
+}
+
+/* --- Edit-only visibility --- */
+.edit-only {
+    display: none !important;
+}
+
+body.edit-mode .edit-only {
+    display: flex !important;
+}
+
+.edit-only-block {
+    display: none !important;
+}
+
+body.edit-mode .edit-only-block {
+    display: inline-block !important;
+}
+
+/* --- Modal Overlay --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    width: 480px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.25s ease;
+}
+
+.modal-sm {
+    width: 340px;
+}
+
+@keyframes modalIn {
+    from {
+        transform: scale(0.95) translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.modal-header h3 i {
+    margin-right: 8px;
+    color: var(--accent);
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* --- Student Form --- */
+.student-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.student-form input,
+.student-form select,
+.student-form textarea {
+    font-family: var(--font-content);
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-panel-alt);
+    color: var(--text-primary);
+    outline: none;
+    transition: border var(--transition);
+}
+
+.student-form input:focus,
+.student-form select:focus,
+.student-form textarea:focus {
+    border-color: var(--accent);
+}
+
+/* --- Timer Config --- */
+.timer-config {
+    text-align: center;
+}
+
+.timer-config label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+}
+
+.timer-config input[type="number"] {
+    width: 100px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-ui);
+    padding: 8px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel-alt);
+    color: var(--accent);
+    outline: none;
+}
+
+.timer-config input[type="number"]:focus {
+    border-color: var(--accent);
+}
+
+.timer-config .form-actions {
+    justify-content: center;
+}

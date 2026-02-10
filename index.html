@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LessonForge | Teaching Dashboard</title>
+    <meta name="description"
+        content="Open-source lesson management terminal for language teachers. Organize lessons, track time, manage teaching resources.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/src/styles/variables.css">
+    <link rel="stylesheet" href="/src/styles/layout.css">
+    <link rel="stylesheet" href="/src/styles/toolbar.css">
+    <link rel="stylesheet" href="/src/styles/content.css">
+    <link rel="stylesheet" href="/src/styles/toolkit.css">
+    <link rel="stylesheet" href="/src/styles/sidebar.css">
+    <link rel="stylesheet" href="/src/styles/shortcuts.css">
+    <link rel="stylesheet" href="/src/styles/print.css">
+</head>
+
+<body data-theme="light">
+
+    <!-- ═══════════════ TOOLBAR ═══════════════ -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <div class="brand">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>LessonForge</span>
+            </div>
+            <div class="toolbar-divider"></div>
+
+            <!-- Student Selector -->
+            <div class="student-selector">
+                <button id="studentBtn" class="icon-btn" title="Switch Student">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span id="studentName">No Student</span>
+                    <i class="fa-solid fa-caret-down" style="font-size:10px; opacity:0.5"></i>
+                </button>
+                <div id="studentDropdown" class="student-dropdown">
+                    <div class="dropdown-header">
+                        <span>Student Profiles</span>
+                        <button id="addStudentBtn" class="icon-btn-small" title="Add Student"><i
+                                class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="studentList" class="student-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar-center">
+            <!-- Timer -->
+            <div class="timer-group">
+                <button id="timerToggle" class="icon-btn" title="Start/Stop Timer (0)">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <div id="timerDisplay" class="timer-display">
+                    <span id="timerTime">00:00</span>
+                </div>
+                <button id="timerMode" class="icon-btn-small" title="Toggle countdown mode">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="toolbar-right">
+            <button id="editToggleBtn" class="icon-btn" title="Edit Mode">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Edit</span>
+            </button>
+            <button id="undoBtn" class="icon-btn disabled" title="Undo (⌘Z)">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button id="redoBtn" class="icon-btn disabled" title="Redo (⌘⇧Z)">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button id="importBtn" class="icon-btn" title="Import Lesson Plan">
+                <i class="fa-solid fa-file-import"></i>
+            </button>
+            <button id="exportBtn" class="icon-btn" title="Export Lesson Plan">
+                <i class="fa-solid fa-file-export"></i>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button id="shortcutsBtn" class="icon-btn" title="Keyboard Shortcuts (?)">
+                <i class="fa-solid fa-keyboard"></i>
+            </button>
+            <button id="themeBtn" class="icon-btn" title="Toggle Dark Mode">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button id="resetBtn" class="icon-btn danger" title="Reset Session">
+                <i class="fa-solid fa-arrow-rotate-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ FORMATTING TOOLBAR (Edit Mode) ═══════════════ -->
+    <div class="format-toolbar edit-only">
+        <button onclick="window.LF.formatText('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+        <button onclick="window.LF.formatText('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+        <button onclick="window.LF.formatText('underline')" title="Underline"><i
+                class="fa-solid fa-underline"></i></button>
+        <div class="toolbar-divider"></div>
+        <button onclick="window.LF.insertHighlight('hl-green')" class="hl-btn hl-green"
+            title="Green Highlight">A</button>
+        <button onclick="window.LF.insertHighlight('hl-blue')" class="hl-btn hl-blue" title="Blue Highlight">A</button>
+        <button onclick="window.LF.insertHighlight('hl-orange')" class="hl-btn hl-orange"
+            title="Orange Highlight">A</button>
+        <button onclick="window.LF.insertHighlight('hl-pink')" class="hl-btn hl-pink" title="Pink Highlight">A</button>
+        <button onclick="window.LF.insertHighlight('hl-purple')" class="hl-btn hl-purple"
+            title="Purple Highlight">A</button>
+        <div class="toolbar-divider"></div>
+        <button onclick="window.LF.formatText('insertUnorderedList')" title="Bullet List"><i
+                class="fa-solid fa-list"></i></button>
+        <button onclick="window.LF.formatText('insertOrderedList')" title="Numbered List"><i
+                class="fa-solid fa-list-ol"></i></button>
+    </div>
+
+    <!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+    <div class="main-grid">
+
+        <!-- LEFT: Lesson Nav -->
+        <div class="panel panel-nav">
+            <div class="panel-header">
+                <h3><i class="fa-solid fa-book-open"></i> Lesson Plan</h3>
+                <button id="addPageBtn" class="icon-btn-small edit-only" title="Add Page"><i
+                        class="fa-solid fa-plus"></i></button>
+            </div>
+            <div id="pageNav" class="page-nav"></div>
+        </div>
+
+        <!-- CENTER: Content -->
+        <div class="panel panel-content">
+            <div id="contentArea" class="content-area"></div>
+        </div>
+
+        <!-- RIGHT: Toolkit + Sidebar -->
+        <div class="panel panel-toolkit">
+            <!-- Toolkit Cards -->
+            <div class="panel-header">
+                <h3><i class="fa-solid fa-toolbox"></i> Toolkit</h3>
+                <div class="toolkit-actions edit-only">
+                    <select id="newToolCat" class="cat-select"></select>
+                    <button id="addToolBtn" class="icon-btn-small" title="Add Card"><i
+                            class="fa-solid fa-plus"></i></button>
+                    <button id="addCatBtn" class="icon-btn-small" title="Add Category"><i
+                            class="fa-solid fa-folder-plus"></i></button>
+                </div>
+            </div>
+            <div id="toolFilters" class="tool-filters"></div>
+            <div id="toolkitContainer" class="toolkit-container"></div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Checklist -->
+            <div class="panel-header">
+                <h3><i class="fa-solid fa-list-check"></i> Session Checklist</h3>
+            </div>
+            <div id="checklistContainer" class="checklist-container"></div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Log / Notes -->
+            <div class="panel-header">
+                <h3><i class="fa-solid fa-clipboard"></i> Session Notes</h3>
+            </div>
+            <textarea id="sessionNotes" class="session-notes" placeholder="Quick notes for this session..."></textarea>
+        </div>
+    </div>
+
+    <!-- ═══════════════ KEYBOARD SHORTCUTS MODAL ═══════════════ -->
+    <div id="shortcutsModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-keyboard"></i> Keyboard Shortcuts</h3>
+                <button id="closeShortcuts" class="icon-btn-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item"><kbd>1</kbd>–<kbd>9</kbd><span>Switch lesson page</span></div>
+                <div class="shortcut-item"><kbd>0</kbd><span>Start/stop timer</span></div>
+                <div class="shortcut-item"><kbd>?</kbd><span>Show shortcuts</span></div>
+                <div class="shortcut-item"><kbd>E</kbd><span>Toggle edit mode</span></div>
+                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>Z</kbd><span>Undo</span></div>
+                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>Z</kbd><span>Redo</span></div>
+                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>S</kbd><span>Export lesson</span></div>
+                <div class="shortcut-item"><kbd>Esc</kbd><span>Close modal</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ STUDENT EDITOR MODAL ═══════════════ -->
+    <div id="studentModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus"></i> <span id="studentModalTitle">Add Student</span></h3>
+                <button id="closeStudentModal" class="icon-btn-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="studentForm" class="student-form">
+                <label>Name <input type="text" id="sName" required></label>
+                <label>Level
+                    <select id="sLevel">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Elementary">Elementary</option>
+                        <option value="Pre-Intermediate">Pre-Intermediate</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Upper-Intermediate">Upper-Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </label>
+                <label>Notes <textarea id="sNotes" rows="3"
+                        placeholder="Learning goals, schedule, etc."></textarea></label>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save</button>
+                    <button type="button" id="cancelStudentBtn" class="btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════════ TIMER CONFIG MODAL ═══════════════ -->
+    <div id="timerModal" class="modal-overlay">
+        <div class="modal-box modal-sm">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-hourglass-half"></i> Countdown Timer</h3>
+                <button id="closeTimerModal" class="icon-btn-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="timer-config">
+                <label>Minutes <input type="number" id="countdownMins" value="25" min="1" max="180"></label>
+                <div class="form-actions">
+                    <button id="startCountdown" class="btn-primary">Start Countdown</button>
+                    <button id="switchToStopwatch" class="btn-secondary">Stopwatch Mode</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFile" accept=".json" style="display:none">
+
+    <!-- App Entry -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

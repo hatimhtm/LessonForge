@@ -1,0 +1,74 @@
+/* ═══════════════════════════════════════════════════
+   LessonForge — Content Panel (Center)
+   ═══════════════════════════════════════════════════ */
+
+.panel-content {
+    background: var(--bg-base);
+}
+
+.content-area {
+    padding: 32px 40px;
+    min-height: 100%;
+    font-family: var(--font-content);
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-primary);
+    outline: none;
+}
+
+.content-area h1 {
+    font-family: var(--font-ui);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+}
+
+.content-area h2 {
+    font-family: var(--font-ui);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.content-area h3 {
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.content-area ul,
+.content-area ol {
+    padding-left: 24px;
+    margin: 8px 0;
+}
+
+.content-area li {
+    margin-bottom: 4px;
+}
+
+.content-area blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 8px 16px;
+    margin: 12px 0;
+    background: var(--accent-bg);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* --- Editable state --- */
+body.edit-mode .content-area {
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    margin: 16px;
+    padding: 24px 32px;
+}

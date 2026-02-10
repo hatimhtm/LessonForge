@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════
+   LessonForge — Print Stylesheet
+   ═══════════════════════════════════════════════════ */
+
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    .toolbar,
+    .format-toolbar,
+    .panel-nav,
+    .panel-toolkit,
+    .modal-overlay {
+        display: none !important;
+    }
+
+    .main-grid {
+        display: block !important;
+        margin-top: 0 !important;
+        height: auto !important;
+    }
+
+    .panel-content {
+        border: none !important;
+        overflow: visible !important;
+    }
+
+    .content-area {
+        padding: 20px !important;
+        font-size: 12pt !important;
+        line-height: 1.6 !important;
+    }
+
+    .content-area h1 {
+        font-size: 18pt !important;
+        color: black !important;
+        border-bottom: 2px solid #333 !important;
+    }
+
+    .hl-green,
+    .hl-blue,
+    .hl-orange,
+    .hl-pink,
+    .hl-purple {
+        background: #eee !important;
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+
+    @page {
+        margin: 1.5cm;
+    }
+}
