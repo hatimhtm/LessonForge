@@ -66,10 +66,15 @@ Built for **one teacher**, **one device**, **no signups, no sync, no servers** �
 | **Student profiles** | Per-student name, level, notes. Active-student indicator at the top of the right rail. |
 | **Session checklist** | Per-session todos (warm-up done, homework collected, etc.). One-click "Reset session" clears boxes + timer + temporary notes — but not your lesson plan. |
 | **Undo / Redo history** | 50-step ring buffer in `state.js`. Every meaningful change snapshots. Keyboard shortcuts `Ctrl/⌘+Z` and `Ctrl/⌘+Shift+Z`. |
-| **Import / Export JSON** | One button: download the entire workspace as `lessonforge-export.json`. Share lesson plans with colleagues, back up before a redesign, restore on a new machine. |
-| **Offline-first** | Once the tab loads, no network. All state in `localStorage`. Yes, the Google Fonts + FontAwesome CDN need a first online load; everything else is cached. |
+| **Import / Export** | One click for JSON (full state) or Markdown (lesson plan, share-ready). Round-trip between machines, hand a printable to a co-teacher. |
+| **⌘K command palette** | Single keystroke jumps to any page, student, or toolkit card. Run actions ("Export Markdown", "Toggle theme", "Insert template") without leaving the keyboard. |
+| **Starter templates** | Six archetypes — conversation, grammar focus, business English, exam prep (IELTS/TOEFL), absolute beginner, young learners — append as new pages with one click. |
+| **PWA / Service worker** | Installable on iPad or desktop, fully offline after first load. No CDN round-trip when you open a new lesson between Zoom calls. |
+| **Save indicator** | Toolbar pill shows "Saved · 3s ago" so you always know `localStorage` caught the last edit. |
+| **Timer chime** | Web Audio API ding-ding-ding on countdown zero + on-screen toast — never miss the end of a 5-minute round-robin. |
+| **Dark mode** | Sakura-pink light theme + deep-plum dark theme. Preference persists across reloads. |
 | **Print stylesheet** | Dedicated `print.css` strips the chrome and prints the active lesson page cleanly for in-class handouts. |
-| **Keyboard shortcuts** | `Ctrl/⌘+Z` undo · `Ctrl/⌘+Shift+Z` redo · `Ctrl/⌘+E` toggle edit mode · `Ctrl/⌘+S` save / export · `Ctrl/⌘+P` print. |
+| **Keyboard shortcuts** | `⌘K` palette · `⌘Z` / `⌘⇧Z` undo / redo · `⌘S` export · `E` edit mode · `1`–`9` page · `0` timer · `?` shortcuts. |
 
 ---
 
@@ -122,13 +127,19 @@ Static output — drop `dist/` on any host (Vercel, Netlify, GitHub Pages, S3, y
 
 ---
 
-### `/// 2.0 — POLISH`
+### `/// 2.0 — OVERHAUL`
 
-- **Brutalist house-style README** + light/dark hero banners.
-- **Open Graph + Twitter Card** meta for social sharing.
-- **`theme-color`** meta so the browser chrome matches the pink accent on mobile.
-- **Inline SVG favicon** (no asset round-trip).
-- **CI workflow** (`vite build` + dist sanity check) so every push verifies the bundle still ships.
+The 2.0 release pushed past polish into the actual product surface:
+
+- **Custom `<dialog>` modal system** replaces every native `prompt` / `confirm` / `alert`. Focus-trapped, Esc-closes, screen-reader friendly — and finally consistent with the theme.
+- **PWA + service worker**. `manifest.webmanifest` + an offline-first cache layer means LessonForge installs to the home screen and survives no-wifi classrooms.
+- **⌘K command palette** spans pages, students, toolkit cards, and one-shot actions (Insert template, Export Markdown, Toggle theme).
+- **Starter-lesson templates** — six teaching archetypes append as new pages.
+- **Save-status indicator** in the toolbar (`Saved · 3s ago`) — never wonder if the last edit hit `localStorage`.
+- **Markdown export** alongside JSON for share-ready handouts.
+- **Web Audio chime** + on-screen toast when a countdown hits zero.
+- **Persisted dark theme** (deep-plum) alongside the original sakura light theme.
+- **Brutalist house-style README**, light/dark hero banners, OG + Twitter cards, `theme-color`, inline SVG favicon, **CI** that builds + sanity-checks `dist/` on every push.
 
 ---
 

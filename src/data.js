@@ -161,3 +161,129 @@ export const defaultChecklist = [
 ];
 
 export const defaultStudents = [];
+
+// ═══════════════════════════════════════════════════
+// Starter lesson templates — appended on user pick
+// ═══════════════════════════════════════════════════
+export const lessonTemplates = [
+    {
+        id: 'tpl-conversation',
+        title: 'Conversation Class',
+        icon: 'fa-comments',
+        description: '60-min talking practice with prompts, follow-ups, and feedback.',
+        pages: [
+            {
+                title: 'Warm-Up · Conversation',
+                content: `<h1>Conversation Warm-Up</h1><p>Pick one and spend 5 minutes:</p><ul><li>What's something new you tried this week?</li><li>If you could teleport anywhere right now, where?</li><li>Describe a meal that made you happy.</li></ul><blockquote>Goal: relaxed flow, not perfect grammar.</blockquote>`,
+            },
+            {
+                title: 'Prompts · Speaking',
+                content: `<h1>Speaking Prompts</h1><h3>Agree / Disagree</h3><ul><li>Working from home is better than the office.</li><li>Social media has done more harm than good.</li><li>Cities are better than the countryside.</li></ul><h3>Story Builder</h3><p>Student tells a 2-minute story from <span class="hl-blue">three random words</span>: <em>bridge · stranger · umbrella</em>.</p>`,
+            },
+            {
+                title: 'Feedback',
+                content: `<h1>Feedback & Correction</h1><p>Note <span class="hl-green">3 things they did well</span>, and <span class="hl-pink">3 things to improve</span>.</p><ul><li>Pronunciation:</li><li>Grammar:</li><li>Vocabulary gap:</li></ul>`,
+            },
+        ],
+    },
+    {
+        id: 'tpl-grammar',
+        title: 'Grammar Focus',
+        icon: 'fa-spell-check',
+        description: 'Tense or structure deep-dive with examples + drills.',
+        pages: [
+            {
+                title: 'Warm-Up · Grammar',
+                content: `<h1>Warm-Up</h1><p>Find the mistake in each sentence:</p><ol><li>I'm working here since 2020.</li><li>She don't likes coffee.</li><li>If I would have known, I would tell you.</li></ol>`,
+            },
+            {
+                title: 'Concept · Present Perfect',
+                content: `<h1>Present Perfect</h1><p><strong>Form:</strong> have / has + past participle</p><h3>Used for</h3><ul><li>Experience: <em>I've been to Japan.</em></li><li>Unfinished time: <em>I've worked here for 3 years.</em></li><li>Recent past: <em>She's just left.</em></li></ul>`,
+            },
+            {
+                title: 'Drills',
+                content: `<h1>Practice Drills</h1><ol><li>Have you ever ___ (eat) sushi?</li><li>She ___ (live) in Paris for 5 years now.</li><li>They ___ just ___ (arrive) at the airport.</li></ol>`,
+            },
+        ],
+    },
+    {
+        id: 'tpl-business',
+        title: 'Business English',
+        icon: 'fa-briefcase',
+        description: 'Meetings, emails, presentations — workplace vocabulary.',
+        pages: [
+            {
+                title: 'Vocab · Meetings',
+                content: `<h1>Meeting Vocabulary</h1><ul><li><span class="hl-green">Agenda</span> — the list of items to discuss</li><li><span class="hl-green">Stakeholder</span> — someone affected by the decision</li><li><span class="hl-green">Deliverable</span> — a concrete result</li><li><span class="hl-green">Action item</span> — a task assigned in the meeting</li><li><span class="hl-green">Circle back</span> — return to a topic later</li></ul>`,
+            },
+            {
+                title: 'Roleplay · Email',
+                content: `<h1>Email Roleplay</h1><p>Write a polite reply to this email:</p><blockquote>"Hi — just following up on the proposal. Can you send the revised numbers by EOD?"</blockquote><p>Use: <em>apologise for delay · attach · confirm timeline · sign off</em>.</p>`,
+            },
+            {
+                title: 'Presentation Skills',
+                content: `<h1>Presenting in English</h1><h3>Useful phrases</h3><ul><li>"I'd like to walk you through…"</li><li>"As you can see on this slide…"</li><li>"Let me come back to that in a moment."</li><li>"To wrap up…"</li></ul>`,
+            },
+        ],
+    },
+    {
+        id: 'tpl-exam',
+        title: 'Exam Prep (IELTS / TOEFL)',
+        icon: 'fa-graduation-cap',
+        description: 'Timed practice across the four exam skills.',
+        pages: [
+            {
+                title: 'Speaking · Part 2',
+                content: `<h1>IELTS Speaking — Part 2</h1><p><strong>Task:</strong> Speak for 1–2 minutes about a place you'd like to visit.</p><p>Cover:</p><ul><li>Where it is</li><li>Why you want to go</li><li>What you'd do there</li><li>Who you'd go with</li></ul>`,
+            },
+            {
+                title: 'Writing · Task 2',
+                content: `<h1>Writing Task 2</h1><blockquote>Some people believe technology has made us less social. To what extent do you agree?</blockquote><p>Plan: <em>intro · agree side · counter-argument · conclusion</em>. 40 minutes, 250 words.</p>`,
+            },
+            {
+                title: 'Listening Strategy',
+                content: `<h1>Listening — Quick Tips</h1><ul><li>Read questions <strong>before</strong> the audio starts.</li><li>Underline keywords — names, numbers, dates.</li><li>Don't get stuck on one question — keep moving.</li><li>Watch for distractors: speakers often change their mind.</li></ul>`,
+            },
+        ],
+    },
+    {
+        id: 'tpl-beginner',
+        title: 'Absolute Beginner',
+        icon: 'fa-seedling',
+        description: 'First-lesson scaffolding for A0/A1 students.',
+        pages: [
+            {
+                title: 'Hello & Names',
+                content: `<h1>Greetings</h1><ul><li>Hello / Hi / Good morning</li><li>What's your name? — My name is ___.</li><li>Nice to meet you.</li><li>How are you? — I'm fine, thanks.</li></ul><p><strong>Practice:</strong> roleplay meeting 3 times with different greetings.</p>`,
+            },
+            {
+                title: 'Numbers 1–20',
+                content: `<h1>Numbers</h1><p>1 one · 2 two · 3 three · 4 four · 5 five · 6 six · 7 seven · 8 eight · 9 nine · 10 ten</p><p>11 eleven · 12 twelve · 13 thirteen · 14 fourteen · 15 fifteen · 16 sixteen · 17 seventeen · 18 eighteen · 19 nineteen · 20 twenty</p>`,
+            },
+            {
+                title: 'Verb "to be"',
+                content: `<h1>The verb "to be"</h1><ul><li>I <strong>am</strong> a teacher.</li><li>You <strong>are</strong> a student.</li><li>He / She / It <strong>is</strong> happy.</li><li>We / You / They <strong>are</strong> friends.</li></ul>`,
+            },
+        ],
+    },
+    {
+        id: 'tpl-kids',
+        title: 'Young Learners',
+        icon: 'fa-child-reaching',
+        description: 'Game-driven 30-min lesson — songs, flashcards, movement.',
+        pages: [
+            {
+                title: 'Warm-Up · Song',
+                content: `<h1>Hello Song</h1><p>Sing "Hello, hello, how are you?" with actions. Repeat 2x.</p><p>Then ask each kid: "What's your name?" / "How old are you?"</p>`,
+            },
+            {
+                title: 'Flashcards · Animals',
+                content: `<h1>Animal Flashcards</h1><p>Show cards one by one. Kids shout the name. Then play <strong>Simon Says</strong>: "Simon says jump like a frog!"</p><p>Animals: cat · dog · fish · bird · cow · horse · pig · sheep</p>`,
+            },
+            {
+                title: 'Goodbye Activity',
+                content: `<h1>Bye-Bye</h1><p>Quick recap with the flashcards. Each kid says their favourite animal. Wave and sing the "Goodbye" song.</p>`,
+            },
+        ],
+    },
+];

@@ -4,12 +4,14 @@
  */
 
 import stateManager from './state.js';
+import { showPrompt, showConfirm, showAlert } from './dialog.js';
 import {
     defaultPages,
     defaultTools,
     defaultCategories,
     defaultChecklist,
     defaultStudents,
+    lessonTemplates,
 } from './data.js';
 
 // ═══════════════════════════════════════════════════
@@ -41,6 +43,13 @@ let draggedItem = null;
 // Initialize
 // ═══════════════════════════════════════════════════
 function init() {
+    // Load persisted theme before anything paints
+    const savedTheme = localStorage.getItem('lessonforge_theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+        document.body.dataset.theme = savedTheme;
+    }
+    syncThemeIcon();
+
     const saved = stateManager.load();
     if (saved) {
         pages = saved.pages || defaultPages;
@@ -62,6 +71,11 @@ function init() {
     stateManager.recordSnapshot(getState());
     bindEvents();
     updateUndoRedoButtons();
+
+    // Save indicator wiring
+    stateManager.onSave(() => paintSaveIndicator());
+    setInterval(paintSaveIndicator, 15_000);
+    paintSaveIndicator();
 }
 
 function getState() {
@@ -228,8 +242,12 @@ function renderChecklist() {
     addBtn.className = 'icon-btn-small edit-only-block';
     addBtn.style.marginLeft = '10px';
     addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    addBtn.onclick = () => {
-        const txt = prompt('New checklist item:');
+    addBtn.onclick = async () => {
+        const txt = await showPrompt({
+            title: 'New checklist item',
+            placeholder: 'e.g. Warm-up done, homework collected',
+            confirmLabel: 'Add',
+        });
         if (txt) {
             checklist.push(txt);
             stateManager.recordSnapshot(getState());
@@ -294,8 +312,12 @@ function setActivePage(index) {
     renderContent();
 }
 
-function addNewPage() {
-    const t = prompt('Page Title:');
+async function addNewPage() {
+    const t = await showPrompt({
+        title: 'New page',
+        placeholder: 'e.g. Warm-Up, Vocabulary, Reading…',
+        confirmLabel: 'Create',
+    });
     if (t) {
         pages.splice(activeIndex + 1, 0, {
             id: 'p' + Date.now(),
@@ -308,8 +330,14 @@ function addNewPage() {
     }
 }
 
-function deletePage(index) {
-    if (confirm('Delete this page?')) {
+async function deletePage(index) {
+    const ok = await showConfirm({
+        title: 'Delete this page?',
+        message: `"${pages[index]?.title ?? 'Untitled'}" will be removed. You can undo this with ⌘Z.`,
+        confirmLabel: 'Delete',
+        danger: true,
+    });
+    if (ok) {
         pages.splice(index, 1);
         if (activeIndex >= pages.length) activeIndex = Math.max(0, pages.length - 1);
         stateManager.recordSnapshot(getState());
@@ -337,16 +365,26 @@ function addNewTool() {
     renderTools();
 }
 
-function deleteTool(index) {
-    if (confirm('Delete this card?')) {
+async function deleteTool(index) {
+    const ok = await showConfirm({
+        title: 'Delete this card?',
+        message: 'You can undo this with ⌘Z.',
+        confirmLabel: 'Delete',
+        danger: true,
+    });
+    if (ok) {
         tools.splice(index, 1);
         stateManager.recordSnapshot(getState());
         renderTools();
     }
 }
 
-function addNewCategory() {
-    const name = prompt('New Category Name:');
+async function addNewCategory() {
+    const name = await showPrompt({
+        title: 'New category',
+        placeholder: 'e.g. Idioms, False Friends, Phrasal Verbs',
+        confirmLabel: 'Add',
+    });
     if (name) {
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         categories.push(slug);
@@ -419,8 +457,15 @@ function saveStudent(e) {
 
 function editStudent(id) { openStudentModal(id); }
 
-function deleteStudent(id) {
-    if (confirm('Delete this student?')) {
+async function deleteStudent(id) {
+    const student = students.find(s => s.id === id);
+    const ok = await showConfirm({
+        title: 'Delete this student?',
+        message: `${student?.name ?? 'This student'}'s profile and notes will be removed. You can undo this with ⌘Z.`,
+        confirmLabel: 'Delete',
+        danger: true,
+    });
+    if (ok) {
         students = students.filter(s => s.id !== id);
         if (activeStudentId === id) activeStudentId = null;
         stateManager.recordSnapshot(getState());
@@ -510,7 +555,8 @@ function toggleTimer() {
                     display.classList.add('expired');
                     btn.innerHTML = '<i class="fa-solid fa-play"></i>';
                     timerRunning = false;
-                    // Flash alert
+                    playTimerChime();
+                    showTimerToast();
                     setTimeout(() => display.classList.remove('expired'), 5000);
                 }
             }
@@ -578,17 +624,49 @@ function toggleTheme() {
     const body = document.body;
     const isDark = body.dataset.theme === 'dark';
     body.dataset.theme = isDark ? 'light' : 'dark';
+    localStorage.setItem('lessonforge_theme', body.dataset.theme);
+    syncThemeIcon();
+}
+
+function syncThemeIcon() {
     const btn = document.getElementById('themeBtn');
+    if (!btn) return;
+    const isDark = document.body.dataset.theme === 'dark';
     btn.innerHTML = isDark
-        ? '<i class="fa-solid fa-moon"></i>'
-        : '<i class="fa-solid fa-sun"></i>';
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+}
+
+// ═══════════════════════════════════════════════════
+// Save Indicator
+// ═══════════════════════════════════════════════════
+function paintSaveIndicator() {
+    const el = document.getElementById('saveLabel');
+    const wrap = document.getElementById('saveIndicator');
+    if (!el || !wrap) return;
+    const at = stateManager.lastSavedAt;
+    if (!at) { el.textContent = 'Saved'; return; }
+    const secs = Math.floor((Date.now() - at) / 1000);
+    let txt;
+    if (secs < 3) txt = 'Saved just now';
+    else if (secs < 60) txt = `Saved · ${secs}s ago`;
+    else if (secs < 3600) txt = `Saved · ${Math.floor(secs / 60)}m ago`;
+    else txt = `Saved · ${Math.floor(secs / 3600)}h ago`;
+    el.textContent = txt;
+    wrap.classList.remove('saving');
 }
 
 // ═══════════════════════════════════════════════════
 // Reset
 // ═══════════════════════════════════════════════════
-function resetSession() {
-    if (confirm('Reset session? This will clear checkboxes, timer, and notes.')) {
+async function resetSession() {
+    const ok = await showConfirm({
+        title: 'Reset session?',
+        message: 'Clears the checklist, the timer, and session notes. Your lesson plan and toolkit stay intact.',
+        confirmLabel: 'Reset',
+        danger: true,
+    });
+    if (ok) {
         document.querySelectorAll('.chk-item input[type="checkbox"]').forEach(c => {
             c.checked = false;
             c.parentElement.classList.remove('done');
@@ -611,6 +689,13 @@ function exportLesson() {
     stateManager.exportJSON(getState());
 }
 
+function exportLessonMarkdown() {
+    if (isEditMode) {
+        pages[activeIndex].content = document.getElementById('contentArea').innerHTML;
+    }
+    stateManager.exportMarkdown(getState());
+}
+
 function importLesson() {
     document.getElementById('importFile').click();
 }
@@ -629,9 +714,15 @@ async function handleImport(e) {
         activeStudentId = data.activeStudentId || null;
         stateManager.recordSnapshot(getState());
         renderAll();
-        alert('Lesson plan imported successfully!');
+        showAlert({
+            title: 'Imported',
+            message: 'Lesson plan loaded from file.',
+        });
     } catch (err) {
-        alert('Import failed: ' + err.message);
+        showAlert({
+            title: 'Import failed',
+            message: err.message,
+        });
     }
     e.target.value = '';
 }
@@ -686,6 +777,13 @@ function closeModal(id) {
 // Keyboard Shortcuts
 // ═══════════════════════════════════════════════════
 function handleKeyboard(e) {
+    // Cmd+K opens palette from anywhere
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        openPalette();
+        return;
+    }
+
     // Ignore when typing in inputs
     const tag = document.activeElement.tagName;
     if (document.activeElement.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA') {
@@ -726,6 +824,240 @@ function handleKeyboard(e) {
 }
 
 // ═══════════════════════════════════════════════════
+// Timer audio cue + toast
+// ═══════════════════════════════════════════════════
+function playTimerChime() {
+    try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        const notes = [880, 660, 990]; // ding-ding-ding
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            const t0 = ctx.currentTime + i * 0.18;
+            gain.gain.setValueAtTime(0, t0);
+            gain.gain.linearRampToValueAtTime(0.35, t0 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.32);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(t0);
+            osc.stop(t0 + 0.35);
+        });
+        setTimeout(() => ctx.close().catch(() => {}), 1500);
+    } catch { /* audio is best-effort */ }
+}
+
+function showTimerToast() {
+    const t = document.getElementById('timerToast');
+    if (!t) return;
+    t.classList.add('active');
+    setTimeout(() => t.classList.remove('active'), 4000);
+}
+
+// ═══════════════════════════════════════════════════
+// Command Palette (⌘K)
+// ═══════════════════════════════════════════════════
+let paletteIndex = 0;
+let paletteItems = [];
+
+function openPalette() {
+    const overlay = document.getElementById('paletteOverlay');
+    const input = document.getElementById('paletteInput');
+    overlay.classList.add('active');
+    input.value = '';
+    renderPaletteResults('');
+    requestAnimationFrame(() => input.focus());
+}
+
+function closePalette() {
+    document.getElementById('paletteOverlay').classList.remove('active');
+}
+
+function buildPaletteSource() {
+    const items = [];
+    pages.forEach((p, i) => {
+        items.push({
+            kind: 'page',
+            icon: 'fa-file-lines',
+            title: p.title,
+            sub: `Page ${i + 1}`,
+            action: () => { setActivePage(i); closePalette(); },
+        });
+    });
+    students.forEach((s) => {
+        items.push({
+            kind: 'student',
+            icon: 'fa-user-graduate',
+            title: s.name,
+            sub: `Student · ${s.level || 'No level'}`,
+            action: () => {
+                activeStudentId = s.id;
+                stateManager.save(getState());
+                renderStudentList();
+                updateStudentDisplay();
+                closePalette();
+            },
+        });
+    });
+    tools.forEach((t) => {
+        items.push({
+            kind: 'card',
+            icon: 'fa-toolbox',
+            title: t.title,
+            sub: `Toolkit · ${t.category}`,
+            action: () => {
+                activeFilter = t.category;
+                renderFilters();
+                renderTools();
+                closePalette();
+            },
+        });
+    });
+    items.push({
+        kind: 'action',
+        icon: 'fa-layer-group',
+        title: 'Insert template…',
+        sub: 'Action',
+        action: () => { closePalette(); openTemplatesModal(); },
+    });
+    items.push({
+        kind: 'action',
+        icon: 'fa-file-export',
+        title: 'Export Markdown',
+        sub: 'Action',
+        action: () => { closePalette(); exportLessonMarkdown(); },
+    });
+    items.push({
+        kind: 'action',
+        icon: 'fa-moon',
+        title: 'Toggle theme',
+        sub: 'Action',
+        action: () => { closePalette(); toggleTheme(); },
+    });
+    return items;
+}
+
+function renderPaletteResults(query) {
+    const results = document.getElementById('paletteResults');
+    const q = query.trim().toLowerCase();
+    const source = buildPaletteSource();
+    paletteItems = q
+        ? source.filter(it => it.title.toLowerCase().includes(q) || it.sub.toLowerCase().includes(q))
+        : source.slice(0, 12);
+
+    if (paletteItems.length === 0) {
+        results.innerHTML = '<div class="palette-empty">No matches.</div>';
+        return;
+    }
+
+    paletteIndex = 0;
+    const groups = {};
+    paletteItems.forEach((it, idx) => {
+        (groups[it.kind] ||= []).push({ ...it, idx });
+    });
+
+    const order = ['page', 'student', 'card', 'action'];
+    const labelMap = { page: 'Pages', student: 'Students', card: 'Toolkit', action: 'Actions' };
+
+    results.innerHTML = order
+        .filter(k => groups[k])
+        .map(k => {
+            const items = groups[k].map(it => `
+                <div class="palette-item${it.idx === 0 ? ' active' : ''}" data-idx="${it.idx}">
+                    <i class="fa-solid ${it.icon}"></i>
+                    <div class="palette-item-body">
+                        <div class="palette-item-title">${escapeHtml(it.title)}</div>
+                        <div class="palette-item-sub">${escapeHtml(it.sub)}</div>
+                    </div>
+                </div>
+            `).join('');
+            return `<div class="palette-section-label">${labelMap[k]}</div>${items}`;
+        }).join('');
+
+    results.querySelectorAll('.palette-item').forEach(el => {
+        el.addEventListener('mouseenter', () => setPaletteActive(parseInt(el.dataset.idx)));
+        el.addEventListener('click', () => paletteItems[parseInt(el.dataset.idx)].action());
+    });
+}
+
+function setPaletteActive(idx) {
+    paletteIndex = idx;
+    document.querySelectorAll('.palette-item').forEach((el) => {
+        el.classList.toggle('active', parseInt(el.dataset.idx) === idx);
+    });
+}
+
+function paletteKeydown(e) {
+    const overlay = document.getElementById('paletteOverlay');
+    if (!overlay.classList.contains('active')) return;
+    if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setPaletteActive(Math.min(paletteIndex + 1, paletteItems.length - 1));
+        scrollPaletteActiveIntoView();
+    }
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setPaletteActive(Math.max(paletteIndex - 1, 0));
+        scrollPaletteActiveIntoView();
+    }
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const it = paletteItems[paletteIndex];
+        if (it) it.action();
+    }
+}
+
+function scrollPaletteActiveIntoView() {
+    const active = document.querySelector('.palette-item.active');
+    if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    })[c]);
+}
+
+// ═══════════════════════════════════════════════════
+// Templates
+// ═══════════════════════════════════════════════════
+function openTemplatesModal() {
+    const grid = document.getElementById('templatesGrid');
+    grid.innerHTML = lessonTemplates.map(tpl => `
+        <button type="button" class="template-card" data-id="${tpl.id}">
+            <div class="template-card-icon"><i class="fa-solid ${tpl.icon}"></i></div>
+            <div class="template-card-title">${escapeHtml(tpl.title)}</div>
+            <div class="template-card-desc">${escapeHtml(tpl.description)}</div>
+        </button>
+    `).join('');
+    grid.querySelectorAll('.template-card').forEach(btn => {
+        btn.addEventListener('click', () => applyTemplate(btn.dataset.id));
+    });
+    document.getElementById('templatesModal').classList.add('active');
+}
+
+function applyTemplate(id) {
+    const tpl = lessonTemplates.find(t => t.id === id);
+    if (!tpl) return;
+    const stamp = Date.now();
+    tpl.pages.forEach((p, i) => {
+        pages.push({
+            id: `tpl-${id}-${stamp}-${i}`,
+            title: p.title,
+            content: p.content.trim(),
+        });
+    });
+    activeIndex = pages.length - tpl.pages.length;
+    stateManager.recordSnapshot(getState());
+    renderAll();
+    updateUndoRedoButtons();
+    closeModal('templatesModal');
+}
+
+// ═══════════════════════════════════════════════════
 // Event Binding
 // ═══════════════════════════════════════════════════
 function bindEvents() {
@@ -737,8 +1069,19 @@ function bindEvents() {
     document.getElementById('shortcutsBtn').addEventListener('click', openShortcutsModal);
     document.getElementById('addPageBtn').addEventListener('click', addNewPage);
     document.getElementById('exportBtn').addEventListener('click', exportLesson);
+    document.getElementById('exportMdBtn').addEventListener('click', exportLessonMarkdown);
     document.getElementById('importBtn').addEventListener('click', importLesson);
     document.getElementById('importFile').addEventListener('change', handleImport);
+    document.getElementById('paletteBtn').addEventListener('click', openPalette);
+    document.getElementById('templatesBtn').addEventListener('click', openTemplatesModal);
+    document.getElementById('closeTemplatesModal').addEventListener('click', () => closeModal('templatesModal'));
+
+    // Command palette
+    document.getElementById('paletteInput').addEventListener('input', (e) => renderPaletteResults(e.target.value));
+    document.getElementById('paletteInput').addEventListener('keydown', paletteKeydown);
+    document.getElementById('paletteOverlay').addEventListener('click', (e) => {
+        if (e.target.id === 'paletteOverlay') closePalette();
+    });
 
     // Timer
     document.getElementById('timerToggle').addEventListener('click', toggleTimer);

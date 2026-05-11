@@ -39,7 +39,11 @@
     <link rel="stylesheet" href="/src/styles/toolkit.css">
     <link rel="stylesheet" href="/src/styles/sidebar.css">
     <link rel="stylesheet" href="/src/styles/shortcuts.css">
+    <link rel="stylesheet" href="/src/styles/dialog.css">
     <link rel="stylesheet" href="/src/styles/print.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest">
 </head>
 
 <body data-theme="light">
@@ -98,11 +102,24 @@
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
             <div class="toolbar-divider"></div>
+            <span id="saveIndicator" class="save-indicator" aria-live="polite" title="Auto-save status">
+                <i class="fa-solid fa-cloud-check"></i><span id="saveLabel">Saved</span>
+            </span>
+            <div class="toolbar-divider"></div>
+            <button id="paletteBtn" class="icon-btn" title="Quick search (⌘K)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button id="templatesBtn" class="icon-btn" title="Insert lesson from template">
+                <i class="fa-solid fa-layer-group"></i>
+            </button>
             <button id="importBtn" class="icon-btn" title="Import Lesson Plan">
                 <i class="fa-solid fa-file-import"></i>
             </button>
-            <button id="exportBtn" class="icon-btn" title="Export Lesson Plan">
+            <button id="exportBtn" class="icon-btn" title="Export as JSON">
                 <i class="fa-solid fa-file-export"></i>
+            </button>
+            <button id="exportMdBtn" class="icon-btn" title="Export as Markdown">
+                <i class="fa-solid fa-file-lines"></i>
             </button>
             <div class="toolbar-divider"></div>
             <button id="shortcutsBtn" class="icon-btn" title="Keyboard Shortcuts (?)">
@@ -205,8 +222,9 @@
                 <div class="shortcut-item"><kbd>E</kbd><span>Toggle edit mode</span></div>
                 <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>Z</kbd><span>Undo</span></div>
                 <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>Z</kbd><span>Redo</span></div>
-                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>S</kbd><span>Export lesson</span></div>
-                <div class="shortcut-item"><kbd>Esc</kbd><span>Close modal</span></div>
+                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>S</kbd><span>Export lesson (JSON)</span></div>
+                <div class="shortcut-item"><kbd>⌘</kbd>+<kbd>K</kbd><span>Quick search palette</span></div>
+                <div class="shortcut-item"><kbd>Esc</kbd><span>Close modal / palette</span></div>
             </div>
         </div>
     </div>
@@ -257,11 +275,51 @@
         </div>
     </div>
 
+    <!-- ═══════════════ COMMAND PALETTE (⌘K) ═══════════════ -->
+    <div id="paletteOverlay" class="palette-overlay">
+        <div class="palette-box" role="dialog" aria-label="Quick search">
+            <div class="palette-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="paletteInput" type="text" placeholder="Jump to a page, card, or student…" autocomplete="off">
+                <kbd class="palette-hint">ESC</kbd>
+            </div>
+            <div id="paletteResults" class="palette-results"></div>
+            <div class="palette-footer">
+                <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+                <span><kbd>↵</kbd> select</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ TEMPLATES MODAL ═══════════════ -->
+    <div id="templatesModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-layer-group"></i> Starter Lesson Templates</h3>
+                <button id="closeTemplatesModal" class="icon-btn-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="modal-hint">Pick a template to append as new pages. Your current lesson is kept.</p>
+            <div id="templatesGrid" class="templates-grid"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ COUNTDOWN HIT-ZERO BANNER ═══════════════ -->
+    <div id="timerToast" class="timer-toast" role="status"><i class="fa-solid fa-bell"></i> Countdown finished</div>
+
     <!-- Hidden file input for import -->
     <input type="file" id="importFile" accept=".json" style="display:none">
 
     <!-- App Entry -->
     <script type="module" src="/src/main.js"></script>
+
+    <!-- Service Worker (offline-first) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => { });
+            });
+        }
+    </script>
 </body>
 
 </html>
