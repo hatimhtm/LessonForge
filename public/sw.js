@@ -4,10 +4,11 @@
  */
 
 const CACHE = 'lessonforge-v1';
+const BASE = new URL('./', self.location).pathname;
 const SHELL = [
-    '/',
-    '/index.html',
-    '/manifest.webmanifest',
+    BASE,
+    BASE + 'index.html',
+    BASE + 'manifest.webmanifest',
 ];
 
 self.addEventListener('install', (e) => {

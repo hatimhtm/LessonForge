@@ -143,6 +143,14 @@ The 2.0 release pushed past polish into the actual product surface:
 
 ---
 
+### `/// STATUS`
+
+🟢 **Live** — [hatimhtm.github.io/LessonForge](https://hatimhtm.github.io/LessonForge/)
+
+Auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy-pages.yml` (Vite static build, `base: "/LessonForge/"`).
+
+---
+
 ### `/// LICENSE`
 
 [MIT](LICENSE). Fork it, ship your own teacher dashboard, change the colour palette, re-skin it for any subject (it's hardcoded for languages but the bones are general). Just keep the copyright line.
